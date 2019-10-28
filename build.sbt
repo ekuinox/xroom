@@ -1,3 +1,6 @@
+import Webpack._
+import play.sbt.PlayImport.PlayKeys.playRunHooks
+
 name := """xroom"""
 organization := "dev.ekuinox"
 
@@ -15,3 +18,6 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "dev.ekuinox.binders._"
+
+
+playRunHooks += baseDirectory.map(base => Webpack(base)).value
