@@ -6,7 +6,7 @@ object Webpack {
   def apply(base: File): PlayRunHook = {
     object WebpackProcess extends PlayRunHook {
       override def beforeStarted(): Unit = {
-        Process("yarn webpack --watch", new File(base.getPath + "/front")).run
+        Process(Seq("cmd", "/c", "yarn", "webpack", "--watch"), new File(base.getPath + "/front")).run
       }
     }
     WebpackProcess
