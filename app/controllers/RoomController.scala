@@ -14,10 +14,10 @@ import room._
 import room.actors._
 
 @Singleton
-class RoomController @Inject() (implicit system: ActorSystem, materializer: Materializer, roomClient: RoomClient) extends Controller {
+class RoomController @Inject()(cc: ControllerComponents) (implicit system: ActorSystem, materializer: Materializer, roomClient: RoomClient) extends AbstractController(cc) {
 
-  def get = Action { implicit request =>
-    Ok(views.html.index())
+  def index(roomId: String) = Action {
+    Ok (views.html.index (roomId) )
   }
 
   def ws(roomId: String) = WebSocket.accept[JsValue, JsValue] { request =>

@@ -1,5 +1,9 @@
-@()
+@(roomId: String)
 
 @main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
+  <div id="root"></div>
+  <script>
+    const roomId = '@roomId'
+  </script>
+  <script src="@routes.Assets.versioned("assets/scripts/bundle.js")" type="text/javascript"></script>
 }

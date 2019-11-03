@@ -21,7 +21,8 @@ import scala.concurrent.ExecutionContext
 class HomeController @Inject()(cc: ControllerComponents)(implicit system: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
 
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+    val roomId = Math.floor(Math.random * 1000).toInt
+    Redirect(s"/$roomId")
   }
 
   def socket = WebSocket.accept[String, String] { request =>
