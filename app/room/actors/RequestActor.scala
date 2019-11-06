@@ -17,7 +17,7 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
       out ! response
     }
     case _ => {
-      out ! Error("Bad Request", identifier)
+      out ! RequestData(Error("Bad Request"), identifier)
     }
   }
 
