@@ -7,7 +7,7 @@ import room._
 import room.events._
 import room.events.{Join, Leave, Talk, Error}
 
-class RequestActor(out: ActorRef) extends Actor {
+class RequestActor(out: ActorRef, identifier: String) extends Actor {
 
   override def receive: Receive = {
     case msg: JsValue => {
@@ -15,7 +15,7 @@ class RequestActor(out: ActorRef) extends Actor {
       out ! response
     }
     case _ => {
-      out ! Json.toJson(Error("Bad Request"))
+      out ! Error("Bad Request", identifier)
     }
   }
 
@@ -23,16 +23,16 @@ class RequestActor(out: ActorRef) extends Actor {
 
   override def postStop() = println(s"Stop ${out.path}")
 
-  def handleMessage(event: Event): JsValue = {
+  def handleMessage(event: Event): Event = {
     event match {
-      case join: Join => Json.toJson(join)
-      case leave: Leave => Json.toJson(leave)
-      case talk: Talk => Json.toJson(talk)
-      case _ => Json.toJson(Error("Bad Request"))
+      case join: Join => join
+      case leave: Leave => leave
+      case talk: Talk => talk
+      case _ => Error("Bad Request", identifier)
     }
   }
 }
 
 object RequestActor {
-  def props(out: ActorRef): Props = Props(new RequestActor(out))
+  def props(out: ActorRef, identifier: String): Props = Props(new RequestActor(out, identifier))
 }

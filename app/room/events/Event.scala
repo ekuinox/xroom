@@ -25,7 +25,7 @@ object Event {
   }
 }
 
-case class Error(message: String, eventType: String = Error.Type) extends Event
+case class Error(message: String, to: String = "", eventType: String = Error.Type) extends Event
 
 object Error {
   implicit val format: OFormat[Error] = Json.format[Error]

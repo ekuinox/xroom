@@ -9,17 +9,18 @@ import room.events.{Join, Leave, Talk, Error}
 
 case class ResForm(user: String, text: String)
 
-class ResponseActor(out: ActorRef) extends Actor {
+class ResponseActor(out: ActorRef, identifier: String) extends Actor {
 
 
   override def receive: Receive = {
-    case msg: JsValue => {
-      val response = handleMessage(msg)
-      out ! response
+    case join: Join => out ! Json.toJson(join)
+    case leave: Leave => out ! Json.toJson(leave)
+    case talk: Talk => out ! Json.toJson(talk)
+    case error: Error => {
+      if (error.to == identifier)
+        out ! Json.toJson(Error("Bad Request"))
     }
-    case _ => {
-      out ! Json.toJson(Error("Bad Request"))
-    }
+    case msg: Any => println(msg.toString)
   }
 
   override def postStop(): Unit = super.postStop()
@@ -35,5 +36,5 @@ class ResponseActor(out: ActorRef) extends Actor {
 }
 
 object ResponseActor {
-  def props(out: ActorRef): Props = Props(new ResponseActor(out))
+  def props(out: ActorRef, identifier: String): Props = Props(new ResponseActor(out, identifier))
 }

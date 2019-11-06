@@ -23,11 +23,13 @@ class RoomController @Inject()(cc: ControllerComponents) (implicit system: Actor
 
   def ws(roomId: String) = WebSocket.accept[JsValue, JsValue] { request =>
 
+    val identifier = scala.util.Random.alphanumeric.take(10).mkString
+
     val room = roomClient.chatRoom(roomId)
 
-    val userInput = ActorFlow.actorRef[JsValue, Event](RequestActor.props)
+    val userInput = ActorFlow.actorRef[JsValue, Event](out => RequestActor.props(out, identifier))
 
-    val userOutPut = ActorFlow.actorRef[Event, JsValue](ResponseActor.props)
+    val userOutPut = ActorFlow.actorRef[Event, JsValue](out => ResponseActor.props(out, identifier))
 
     userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right)
 
