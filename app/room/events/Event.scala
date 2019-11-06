@@ -7,11 +7,11 @@ abstract class Event()
 object Event {
   implicit def json2object(value: JsValue): Event = {
     (value \ "eventType").asOpt[String] match {
-      case Some(Join.Type) => value.asOpt[Join].getOrElse(Error("bad request"))
-      case Some(Leave.Type) => value.asOpt[Leave].getOrElse(Error("bad request"))
-      case Some(Talk.Type) => value.asOpt[Talk].getOrElse(Error("bad request"))
-      case None => Error("bad request")
-      case _ => Error("bad request")
+      case Some(Join.Type) => value.asOpt[Join].getOrElse(BadRequestError)
+      case Some(Leave.Type) => value.asOpt[Leave].getOrElse(BadRequestError)
+      case Some(Talk.Type) => value.asOpt[Talk].getOrElse(BadRequestError)
+      case None => BadRequestError
+      case _ => BadRequestError
     }
   }
 

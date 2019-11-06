@@ -29,7 +29,7 @@ class ResponseActor(out: ActorRef, identifier: String) extends Actor {
       case join: Join => Json.toJson(join)
       case leave: Leave => Json.toJson(leave)
       case talk: Talk => Json.toJson(talk)
-      case _ => Json.toJson(Error("Bad Request"))
+      case _ => Json.toJson(BadRequestError)
     }
   }
 }

@@ -17,7 +17,7 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
       out ! response
     }
     case _ => {
-      out ! RequestData(Error("Bad Request"), identifier)
+      out ! RequestData(BadRequestError, identifier)
     }
   }
 
@@ -30,7 +30,7 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
       case join: Join => join
       case leave: Leave => leave
       case talk: Talk => talk
-      case _ => Error("Bad Request")
+      case _ => BadRequestError
     }
   }
 }
