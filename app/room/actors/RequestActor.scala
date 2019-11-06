@@ -12,7 +12,6 @@ class RequestActor(out: ActorRef) extends Actor {
   override def receive: Receive = {
     case msg: JsValue => {
       val response = handleMessage(msg)
-      println(response.toString())
       out ! response
     }
     case _ => {
