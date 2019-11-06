@@ -23,7 +23,7 @@ export default class App extends React.Component {
             console.log(JSON.parse(msg.data))
         })
 
-        window.ws = this.ws;
+        window.ws = this.ws
     }
 
     render() {
