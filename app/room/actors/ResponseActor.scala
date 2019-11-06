@@ -18,7 +18,7 @@ class ResponseActor(out: ActorRef) extends Actor {
       out ! response
     }
     case _ => {
-      out ! JsObject(Seq("error" -> JsString("bad request")))
+      out ! Json.toJson(Error("Bad Request"))
     }
   }
 
@@ -29,7 +29,7 @@ class ResponseActor(out: ActorRef) extends Actor {
       case join: Join => Json.toJson(join)
       case leave: Leave => Json.toJson(leave)
       case talk: Talk => Json.toJson(talk)
-      case _ => JsObject(Seq("error" -> JsString("bad request")))
+      case _ => Json.toJson(Error("Bad Request"))
     }
   }
 }
