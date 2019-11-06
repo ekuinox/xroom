@@ -12,7 +12,9 @@ import akka.NotUsed
 import scala.collection.mutable.{ Map => MutableMap }
 import scala.concurrent.duration._
 
-case class Room(roomId: String, bus: Flow[Message, Message, UniqueKillSwitch])
+import events._
+
+case class Room(roomId: String, bus: Flow[Event, Event, UniqueKillSwitch])
 
 @Singleton
 class RoomClient @Inject()(implicit val materializer: Materializer, implicit val system: ActorSystem) {
@@ -31,14 +33,14 @@ class RoomClient @Inject()(implicit val materializer: Materializer, implicit val
   private def create(roomId: String): Room = {
 
     val (sink, source) =
-      MergeHub.source[Message](perProducerBufferSize = 16)
+      MergeHub.source[Event](perProducerBufferSize = 16)
         .toMat(BroadcastHub.sink(bufferSize = 256))(Keep.both)
         .run()
 
     source.runWith(Sink.ignore)
 
     val bus = Flow.fromSinkAndSource(sink, source)
-      .joinMat(KillSwitches.singleBidi[Message, Message])(Keep.right)
+      .joinMat(KillSwitches.singleBidi[Event, Event])(Keep.right)
       .backpressureTimeout(3.seconds)
 
     Room(roomId, bus)

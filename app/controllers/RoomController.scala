@@ -12,6 +12,7 @@ import play.api.libs.json.JsValue
 
 import room._
 import room.actors._
+import room.events._
 
 @Singleton
 class RoomController @Inject()(cc: ControllerComponents) (implicit system: ActorSystem, materializer: Materializer, roomClient: RoomClient) extends AbstractController(cc) {
@@ -24,9 +25,9 @@ class RoomController @Inject()(cc: ControllerComponents) (implicit system: Actor
 
     val room = roomClient.chatRoom(roomId)
 
-    val userInput = ActorFlow.actorRef[JsValue, Message](RequestActor.props)
+    val userInput = ActorFlow.actorRef[JsValue, Event](RequestActor.props)
 
-    val userOutPut = ActorFlow.actorRef[Message, JsValue](ResponseActor.props)
+    val userOutPut = ActorFlow.actorRef[Event, JsValue](ResponseActor.props)
 
     userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right)
 
