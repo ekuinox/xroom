@@ -11,7 +11,6 @@ case class ResForm(user: String, text: String)
 
 class ResponseActor(out: ActorRef, identifier: String) extends Actor {
 
-
   override def receive: Receive = {
     case RequestData(join: Join, _) => out ! Json.toJson(join)
     case RequestData(leave: Leave, _) => out ! Json.toJson(leave)
