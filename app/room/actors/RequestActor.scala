@@ -7,11 +7,13 @@ import room._
 import room.events._
 import room.events.{Join, Leave, Talk, Error}
 
+case class RequestData(event: Event, triggerUserIdentifier: String)
+
 class RequestActor(out: ActorRef, identifier: String) extends Actor {
 
   override def receive: Receive = {
     case msg: JsValue => {
-      val response = handleMessage(msg)
+      val response = RequestData(handleMessage(msg), identifier)
       out ! response
     }
     case _ => {
@@ -28,7 +30,7 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
       case join: Join => join
       case leave: Leave => leave
       case talk: Talk => talk
-      case _ => Error("Bad Request", identifier)
+      case _ => Error("Bad Request")
     }
   }
 }

@@ -13,12 +13,12 @@ class ResponseActor(out: ActorRef, identifier: String) extends Actor {
 
 
   override def receive: Receive = {
-    case join: Join => out ! Json.toJson(join)
-    case leave: Leave => out ! Json.toJson(leave)
-    case talk: Talk => out ! Json.toJson(talk)
-    case error: Error => {
-      if (error.to == identifier)
-        out ! Json.toJson(Error("Bad Request"))
+    case RequestData(join: Join, _) => out ! Json.toJson(join)
+    case RequestData(leave: Leave, _) => out ! Json.toJson(leave)
+    case RequestData(talk: Talk, _) => out ! Json.toJson(talk)
+    case RequestData(error: Error, triggerUserIdentifier) => {
+      if (triggerUserIdentifier == identifier)
+        out ! Json.toJson(error)
     }
     case msg: Any => println(msg.toString)
   }
