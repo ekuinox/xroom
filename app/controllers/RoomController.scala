@@ -23,7 +23,7 @@ class RoomController @Inject()(cc: ControllerComponents) (implicit system: Actor
 
   def ws(roomId: String) = WebSocket.accept[JsValue, JsValue] { request =>
 
-    val identifier = scala.util.Random.alphanumeric.take(10).mkString
+    val identifier = request.cookies("PLAY_SESSION").value
 
     val room = roomClient.chatRoom(roomId)
 
