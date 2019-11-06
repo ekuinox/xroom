@@ -8,7 +8,11 @@ declare var window: MyWindow
 
 declare const roomId: string
 
-export default class App extends React.Component {
+interface State {
+    text: string
+}
+
+export default class App extends React.Component<{}, State> {
     ws: WebSocket
 
     constructor() {
@@ -17,6 +21,7 @@ export default class App extends React.Component {
 
         this.ws.addEventListener('open', () => {
             console.log('connected!')
+            this.send({eventType: "Join", username: "noname"})
         })
 
         this.ws.addEventListener('message', msg => {
@@ -24,14 +29,21 @@ export default class App extends React.Component {
         })
 
         window.ws = this.ws
+
+        this.setState({text: ""})
+    }
+
+    send(message: any) {
+        this.ws.send(JSON.stringify(message))
     }
 
     render() {
         return (
             <div style={{color: "yellow"}}>
                 Hello World
+                <textarea rows={1} cols={30} onChange={event => this.setState({text: event.target.value})}/>
                 <button onClick={() => {
-                    this.ws.send(JSON.stringify({"data": "foo"}))
+                    this.send({eventType: "Talk", username: "noname", text: this.state.text})
                 }}>はい</button>
 
             </div>
