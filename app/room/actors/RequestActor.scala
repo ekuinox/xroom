@@ -10,6 +10,7 @@ import room.events.{Join, Leave, Talk, Error}
 case class RequestData(event: Event, triggerUserIdentifier: String)
 
 class RequestActor(out: ActorRef, identifier: String) extends Actor {
+  val username: String = makeUsername
 
   override def receive: Receive = {
     case msg: JsValue => {
@@ -21,9 +22,13 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
     }
   }
 
-  override def preStart() = println(s"Start ${out.path}")
+  override def preStart(): Unit = {
+    out ! RequestData(Join(username), identifier)
+  }
 
-  override def postStop() = println(s"Stop ${out.path}")
+  override def postStop(): Unit = {
+    out ! RequestData(Leave(username), identifier)
+  }
 
   def handleMessage(event: Event): Event = {
     event match {
@@ -33,6 +38,9 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
       case _ => BadRequestError
     }
   }
+
+  def makeUsername = scala.util.Random.alphanumeric.take(10).mkString
+
 }
 
 object RequestActor {
