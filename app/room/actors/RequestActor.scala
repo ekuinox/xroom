@@ -32,8 +32,6 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
 
   def handleMessage(event: Event): Event = {
     event match {
-      case join: Join => join
-      case leave: Leave => leave
       case talk: Talk => talk
       case _ => BadRequestError
     }
