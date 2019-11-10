@@ -32,7 +32,7 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
 
   def handleMessage(event: Event): Event = {
     event match {
-      case talk: Talk => talk
+      case talk: Talk => talk.copy(username = username)
       case _ => BadRequestError
     }
   }
