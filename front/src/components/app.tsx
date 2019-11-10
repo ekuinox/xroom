@@ -21,7 +21,6 @@ export default class App extends React.Component<{}, State> {
 
         this.ws.addEventListener('open', () => {
             console.log('connected!')
-            this.send({eventType: "Join", username: "noname"})
         })
 
         this.ws.addEventListener('message', msg => {
