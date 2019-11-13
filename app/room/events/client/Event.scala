@@ -9,10 +9,13 @@ object Event {
     (value \ "eventType").asOpt[String] match {
       case Some(Talk.Type) => value.asOpt[Talk].getOrElse(Error(""))
       case Some(UpdateUsername.Type) => value.asOpt[UpdateUsername].getOrElse(Error(""))
+      case Some(Draw.Type) => value.asOpt[Draw].getOrElse(Error(""))
+      case Some(UpdatePen.Type) => value.asOpt[UpdatePen].getOrElse(Error(""))
       case _ => Error("")
     }
   }
 
+  // ぶっちゃけリクエスト自体をJSONにすることがないのでいらない
   implicit def object2json(event: Event): JsValue = {
     event match {
       case event: Talk => Json.toJson(event)
