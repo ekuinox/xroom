@@ -8,6 +8,7 @@ object Event {
   implicit def json2object(value: JsValue): Event = {
     (value \ "eventType").asOpt[String] match {
       case Some(Talk.Type) => value.asOpt[Talk].getOrElse(Error(""))
+      case Some(UpdateUsername.Type) => value.asOpt[UpdateUsername].getOrElse(Error(""))
       case _ => Error("")
     }
   }

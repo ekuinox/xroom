@@ -10,6 +10,7 @@ object Event {
       case Some(Join.Type) => value.asOpt[Join].getOrElse(BadRequestError)
       case Some(Leave.Type) => value.asOpt[Leave].getOrElse(BadRequestError)
       case Some(Talk.Type) => value.asOpt[Talk].getOrElse(BadRequestError)
+      case Some(UpdateUsername.Type) => value.asOpt[UpdateUsername].getOrElse(BadRequestError)
       case None => BadRequestError
       case _ => BadRequestError
     }
@@ -20,6 +21,7 @@ object Event {
       case event: Join => Json.toJson(event)
       case event: Leave => Json.toJson(event)
       case event: Talk => Json.toJson(event)
+      case event: UpdateUsername => Json.toJson(event)
       case event: Error => Json.toJson(event)
     }
   }
