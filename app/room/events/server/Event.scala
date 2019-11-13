@@ -5,6 +5,7 @@ import play.api.libs.json.{JsValue, Json, OFormat}
 abstract class Event()
 
 object Event {
+  // レスポンスがJSONで来る(?)状況はないはずなので別にいらない
   implicit def json2object(value: JsValue): Event = {
     (value \ "eventType").asOpt[String] match {
       case Some(Join.Type) => value.asOpt[Join].getOrElse(BadRequestError)
@@ -22,6 +23,8 @@ object Event {
       case event: Leave => Json.toJson(event)
       case event: Talk => Json.toJson(event)
       case event: UpdateUsername => Json.toJson(event)
+      case event: Draw => Json.toJson(event)
+      case event: UpdatePen => Json.toJson(event)
       case event: Error => Json.toJson(event)
     }
   }
