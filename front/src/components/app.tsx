@@ -12,7 +12,7 @@ interface State {
     text: string
 }
 
-type EventType = 'Join' | 'Leave' | 'Talk'
+type EventType = 'Join' | 'Leave' | 'Talk' | 'Draw' | 'UpdatePen'
 interface Event<T extends EventType> {
     eventType: T
 }
@@ -30,9 +30,32 @@ interface Talk extends Event<'Talk'> {
     username: string
 }
 
+interface UpdatePen extends Event<'UpdatePen'> {
+    username: string,
+    pen: {
+        color: string
+    }
+}
+
+interface Position {
+    x: number,
+    y: number
+}
+
+interface Palette {
+    position: Position,
+    color: string
+}
+
+interface Draw extends Event<'Draw'> {
+    username: string,
+    position: Position
+}
+
 export default class App extends React.Component<{}, State> {
     ws: WebSocket
-
+    isDraw: boolean
+    lastPositions: { [key: string]: Palette; } = {}
 
     constructor() {
         super({})
@@ -49,6 +72,11 @@ export default class App extends React.Component<{}, State> {
             if (data.eventType == 'Join') {
                 const join = data as Join
                 console.log(`${join.username}: joined`)
+
+                this.lastPositions[join.username] = {
+                    position: { x: null, y: null },
+                    color: "#000000"
+                }
                 return
             }
 
@@ -64,9 +92,39 @@ export default class App extends React.Component<{}, State> {
                 return
             }
 
+            if (data.eventType == 'Draw') {
+                const draw = data as Draw
+
+                const context = (document.getElementById('mainCanvas') as HTMLCanvasElement).getContext('2d')
+
+                const palette = this.lastPositions[draw.username]
+                const lastPosition = palette.position
+
+                context.lineCap = 'round';
+                context.lineJoin = 'round';
+                context.lineWidth = 5;
+                context.strokeStyle = palette.color;
+
+                const { x, y } = draw.position
+
+                if (lastPosition.x === null || lastPosition.y === null) {
+                    context.moveTo(x, y);
+                } else {
+                    context.moveTo(lastPosition.x, lastPosition.y);
+                }
+                context.lineTo(x, y);
+                context.stroke();
+
+                this.lastPositions[draw.username].position = {x, y};
+
+                return
+            }
         })
 
         window.ws = this.ws
+
+        this.isDraw = false
+        this.lastPositions = {}
 
         this.setState({text: ""})
     }
@@ -83,6 +141,29 @@ export default class App extends React.Component<{}, State> {
                 <button onClick={() => {
                     this.send({eventType: "Talk", text: this.state.text})
                 }}>はい</button>
+
+                <canvas
+                    id="mainCanvas"
+                    onMouseDown={() => this.isDraw = true }
+                    onMouseOut={() => this.isDraw = false }
+                    onMouseUp={() => this.isDraw = false }
+                    onMouseMove={event => {
+                        if (!this.isDraw) return
+
+                        this.send({
+                            eventType: 'Draw',
+                            position: {
+                                x: event.clientX,
+                                y: event.clientY
+                            }
+                        })
+                    }}
+                    style={{
+                        border: 'solid'
+                    }}
+                >
+
+                </canvas>
 
             </div>
         )
