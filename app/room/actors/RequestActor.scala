@@ -29,8 +29,8 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
   }
 
   override def postStop(): Unit = {
-    RoomClient.removeParticipant(roomId, identifier)
     out ! RequestData(Leave(username), identifier)
+    RoomClient.removeParticipant(roomId, identifier)
   }
 
   def handleMessage(event: ClientEvent): Event = {
