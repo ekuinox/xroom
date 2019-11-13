@@ -5,7 +5,13 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import room._
 import room.events._
-import room.events.client.{ Event => ClientEvent, Talk => ClientTalk, UpdateUsername => ClientUpdateUsername }
+import room.events.client.{
+  Event => ClientEvent,
+  Talk => ClientTalk,
+  UpdateUsername => ClientUpdateUsername,
+  UpdatePen => ClientUpdatePen,
+  Draw => ClientDraw
+}
 import room.events.server._
 import room._
 import room.Participant._
@@ -39,6 +45,8 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
       case updateUsername: ClientUpdateUsername =>
         RoomClient.addParticipant(roomId, identifier, RoomClient.getParticipant(roomId, identifier).get.copy(username = updateUsername.username))
         UpdateUsername(oldUsername = username, newUsername = updateUsername.username)
+      case draw: ClientDraw => Draw(username, draw.position)
+      case updatePen: ClientUpdatePen => UpdatePen(username, updatePen.pen)
       case _ => BadRequestError
     }
   }

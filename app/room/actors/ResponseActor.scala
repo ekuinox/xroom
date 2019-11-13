@@ -16,6 +16,8 @@ class ResponseActor(out: ActorRef, identifier: String, roomId: String) extends A
     case RequestData(leave: Leave, _) => out ! Json.toJson(leave)
     case RequestData(talk: Talk, _) => out ! Json.toJson(talk)
     case RequestData(updateUsername: UpdateUsername, _) => out ! Json.toJson(updateUsername)
+    case RequestData(draw: Draw, _) => out ! Json.toJson(draw)
+    case RequestData(updatePen: UpdatePen, _) => out ! Json.toJson(updatePen)
     case RequestData(error: Error, triggerUserIdentifier) => {
       if (triggerUserIdentifier == identifier)
         out ! Json.toJson(error)
