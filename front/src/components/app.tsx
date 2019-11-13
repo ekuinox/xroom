@@ -81,7 +81,7 @@ export default class App extends React.Component<{}, State> {
                 Hello World
                 <textarea rows={1} cols={30} onChange={event => this.setState({text: event.target.value})}/>
                 <button onClick={() => {
-                    this.send({eventType: "Talk", username: '', text: this.state.text})
+                    this.send({eventType: "Talk", text: this.state.text})
                 }}>はい</button>
 
             </div>
