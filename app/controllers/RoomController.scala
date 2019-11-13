@@ -14,6 +14,8 @@ import room.actors._
 import room.events._
 import room.events.server.Event
 
+import scala.concurrent.Future
+
 @Singleton
 class RoomController @Inject()(cc: ControllerComponents) (implicit system: ActorSystem, materializer: Materializer, roomClient: RoomClient) extends AbstractController(cc) {
 
@@ -21,18 +23,22 @@ class RoomController @Inject()(cc: ControllerComponents) (implicit system: Actor
     Ok(views.html.index(roomId))
   }
 
-  def ws(roomId: String) = WebSocket.accept[JsValue, JsValue] { request =>
+  def ws(roomId: String) = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
 
     val identifier = request.cookies("PLAY_SESSION").value
 
     val room = roomClient.chatRoom(roomId)
 
-    val userInput = ActorFlow.actorRef[JsValue, Event](out => RequestActor.props(out, identifier, roomId))
+    Future.successful(room.participants.get(identifier) match {
+      case None =>
+        val userInput = ActorFlow.actorRef[JsValue, Event](out => RequestActor.props(out, identifier, roomId))
 
-    val userOutPut = ActorFlow.actorRef[Event, JsValue](out => ResponseActor.props(out, identifier, roomId))
+        val userOutPut = ActorFlow.actorRef[Event, JsValue](out => ResponseActor.props(out, identifier, roomId))
 
-    userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right)
-
+        Right(userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right))
+      case Some(_) =>
+        Left(Forbidden) // this session already connected
+    })
   }
 
 }
