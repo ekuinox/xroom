@@ -1,11 +1,11 @@
 package room.actors
 
-import akka.actor.{ Actor, ActorRef, PoisonPill, Props }
+import akka.actor.{Actor, ActorRef, PoisonPill, Props}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import room._
 import room.events._
-import room.events.{Join, Leave, Talk, Error}
+import room.events.server._
 
 case class ResForm(user: String, text: String)
 

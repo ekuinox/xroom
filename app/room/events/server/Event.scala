@@ -1,4 +1,4 @@
-package room.events
+package room.events.server
 
 import play.api.libs.json.{JsValue, Json, OFormat}
 

@@ -1,18 +1,18 @@
 package room
 
 import java.util.concurrent.atomic.AtomicReference
-import javax.inject.{ Inject, Singleton }
 
+import javax.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{ BroadcastHub, Flow, Keep, MergeHub, Sink }
-import akka.stream.{ KillSwitches, Materializer, UniqueKillSwitch }
-import akka.stream.scaladsl.{ Sink, Source }
+import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink}
+import akka.stream.{KillSwitches, Materializer, UniqueKillSwitch}
+import akka.stream.scaladsl.{Sink, Source}
 import akka.NotUsed
 
-import scala.collection.mutable.{ Map => MutableMap }
+import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent.duration._
-
 import events._
+import room.events.server.Event
 
 case class Room(roomId: String, bus: Flow[Event, Event, UniqueKillSwitch])
 

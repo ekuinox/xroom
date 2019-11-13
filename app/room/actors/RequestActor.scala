@@ -5,7 +5,8 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import room._
 import room.events._
-import room.events.{Join, Leave, Talk, Error}
+import room.events.client.{ Event => ClientEvent, Talk => ClientTalk }
+import room.events.server._
 
 case class RequestData(event: Event, triggerUserIdentifier: String)
 
@@ -30,9 +31,9 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
     out ! RequestData(Leave(username), identifier)
   }
 
-  def handleMessage(event: Event): Event = {
+  def handleMessage(event: ClientEvent): Event = {
     event match {
-      case talk: Talk => talk.copy(username = username)
+      case talk: ClientTalk => Talk(username = username, text = talk.text)
       case _ => BadRequestError
     }
   }
