@@ -13,8 +13,6 @@ import room.Participant._
 case class RequestData(event: Event, triggerUserIdentifier: String)
 
 class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Actor {
-  val username: String = makeUsername
-
   override def receive: Receive = {
     case msg: JsValue => {
       val response = RequestData(handleMessage(msg), identifier)
@@ -26,7 +24,7 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
   }
 
   override def preStart(): Unit = {
-    RoomClient.addParticipant(roomId, identifier, Participant(username, identifier))
+    RoomClient.addParticipant(roomId, identifier, Participant(makeUsername, identifier))
     out ! RequestData(Join(username), identifier)
   }
 
@@ -45,7 +43,9 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
     }
   }
 
-  def makeUsername = scala.util.Random.alphanumeric.take(10).mkString
+  def username: String = RoomClient.getParticipant(roomId, identifier).get.username
+
+  def makeUsername: String = scala.util.Random.alphanumeric.take(10).mkString
 
 }
 
