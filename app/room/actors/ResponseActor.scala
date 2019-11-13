@@ -9,7 +9,7 @@ import room.events.server._
 
 case class ResForm(user: String, text: String)
 
-class ResponseActor(out: ActorRef, identifier: String) extends Actor {
+class ResponseActor(out: ActorRef, identifier: String, roomId: String) extends Actor {
 
   override def receive: Receive = {
     case RequestData(join: Join, _) => out ! Json.toJson(join)
@@ -35,5 +35,5 @@ class ResponseActor(out: ActorRef, identifier: String) extends Actor {
 }
 
 object ResponseActor {
-  def props(out: ActorRef, identifier: String): Props = Props(new ResponseActor(out, identifier))
+  def props(out: ActorRef, identifier: String, roomId: String): Props = Props(new ResponseActor(out, identifier, roomId))
 }

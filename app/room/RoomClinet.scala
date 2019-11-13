@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 import events._
 import room.events.server.Event
 
-case class Room(roomId: String, bus: Flow[Event, Event, UniqueKillSwitch])
+case class Room(roomId: String, bus: Flow[Event, Event, UniqueKillSwitch], participants: MutableMap[String, Participant])
 
 @Singleton
 class RoomClient @Inject()(implicit val materializer: Materializer, implicit val system: ActorSystem) {
@@ -43,12 +43,18 @@ class RoomClient @Inject()(implicit val materializer: Materializer, implicit val
       .joinMat(KillSwitches.singleBidi[Event, Event])(Keep.right)
       .backpressureTimeout(3.seconds)
 
-    Room(roomId, bus)
+    Room(roomId, bus, MutableMap())
   }
 }
 
 object RoomClient {
 
   val roomPool = new AtomicReference[MutableMap[String, Room]](MutableMap[String, Room]())
+
+  def getParticipant(roomId: String, identifier: String): Option[Participant] = roomPool.get()(roomId).participants.get(identifier)
+
+  def addParticipant(roomId: String, identifier: String, participant: Participant): Unit = roomPool.get()(roomId).participants(identifier) = participant
+
+  def removeParticipant(roomId: String, identifier: String): Unit = roomPool.get()(roomId).participants.remove(identifier)
 
 }

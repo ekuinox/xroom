@@ -7,10 +7,11 @@ import room._
 import room.events._
 import room.events.client.{ Event => ClientEvent, Talk => ClientTalk }
 import room.events.server._
+import room._
 
 case class RequestData(event: Event, triggerUserIdentifier: String)
 
-class RequestActor(out: ActorRef, identifier: String) extends Actor {
+class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Actor {
   val username: String = makeUsername
 
   override def receive: Receive = {
@@ -24,10 +25,12 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
   }
 
   override def preStart(): Unit = {
+    RoomClient.addParticipant(roomId, identifier, Participant(username, identifier))
     out ! RequestData(Join(username), identifier)
   }
 
   override def postStop(): Unit = {
+    RoomClient.removeParticipant(roomId, identifier)
     out ! RequestData(Leave(username), identifier)
   }
 
@@ -43,5 +46,5 @@ class RequestActor(out: ActorRef, identifier: String) extends Actor {
 }
 
 object RequestActor {
-  def props(out: ActorRef, identifier: String): Props = Props(new RequestActor(out, identifier))
+  def props(out: ActorRef, identifier: String, roomId: String): Props = Props(new RequestActor(out, identifier, roomId))
 }

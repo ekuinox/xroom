@@ -27,9 +27,9 @@ class RoomController @Inject()(cc: ControllerComponents) (implicit system: Actor
 
     val room = roomClient.chatRoom(roomId)
 
-    val userInput = ActorFlow.actorRef[JsValue, Event](out => RequestActor.props(out, identifier))
+    val userInput = ActorFlow.actorRef[JsValue, Event](out => RequestActor.props(out, identifier, roomId))
 
-    val userOutPut = ActorFlow.actorRef[Event, JsValue](out => ResponseActor.props(out, identifier))
+    val userOutPut = ActorFlow.actorRef[Event, JsValue](out => ResponseActor.props(out, identifier, roomId))
 
     userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right)
 
