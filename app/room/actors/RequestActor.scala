@@ -24,7 +24,7 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
   }
 
   override def preStart(): Unit = {
-    RoomClient.addParticipant(roomId, identifier, Participant(makeUsername, identifier))
+    RoomClient.addParticipant(roomId, identifier, Participant(makeUsername))
     out ! RequestData(Join(username), identifier)
   }
 
