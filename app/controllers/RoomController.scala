@@ -18,7 +18,7 @@ import room.events.server.Event
 class RoomController @Inject()(cc: ControllerComponents) (implicit system: ActorSystem, materializer: Materializer, roomClient: RoomClient) extends AbstractController(cc) {
 
   def index(roomId: String) = Action {
-    Ok (views.html.index (roomId) )
+    Ok(views.html.index(roomId))
   }
 
   def ws(roomId: String) = WebSocket.accept[JsValue, JsValue] { request =>
