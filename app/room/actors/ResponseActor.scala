@@ -23,16 +23,6 @@ class ResponseActor(out: ActorRef, identifier: String, roomId: String) extends A
     case msg: Any => println(msg.toString)
   }
 
-  override def postStop(): Unit = super.postStop()
-
-  def handleMessage(event: Event): JsValue = {
-    event match {
-      case join: Join => Json.toJson(join)
-      case leave: Leave => Json.toJson(leave)
-      case talk: Talk => Json.toJson(talk)
-      case _ => Json.toJson(BadRequestError)
-    }
-  }
 }
 
 object ResponseActor {
