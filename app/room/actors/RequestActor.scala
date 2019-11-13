@@ -5,9 +5,10 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import room._
 import room.events._
-import room.events.client.{ Event => ClientEvent, Talk => ClientTalk }
+import room.events.client.{ Event => ClientEvent, Talk => ClientTalk, UpdateUsername => ClientUpdateUsername }
 import room.events.server._
 import room._
+import room.Participant._
 
 case class RequestData(event: Event, triggerUserIdentifier: String)
 
@@ -36,7 +37,10 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
 
   def handleMessage(event: ClientEvent): Event = {
     event match {
-      case talk: ClientTalk => Talk(username = username, text = talk.text)
+      case talk: ClientTalk => Talk(username = RoomClient.getParticipant(roomId, identifier).get.username, text = talk.text)
+      case updateUsername: ClientUpdateUsername =>
+        RoomClient.addParticipant(roomId, identifier, RoomClient.getParticipant(roomId, identifier).get.copy(username = updateUsername.username))
+        UpdateUsername(oldUsername = username, newUsername = updateUsername.username)
       case _ => BadRequestError
     }
   }
