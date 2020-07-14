@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { isMessage, Message } from '../common/messages';
+import { Palette } from '../common/types';
 
 interface MyWindow extends Window {
     ws: WebSocket
@@ -12,125 +14,86 @@ interface State {
     text: string
 }
 
-type EventType = 'Join' | 'Leave' | 'Talk' | 'Draw' | 'UpdatePen'
-interface Event<T extends EventType> {
-    eventType: T
-}
-
-interface Join extends Event<'Join'> {
-    username: string
-}
-
-interface Leave extends Event<'Leave'> {
-    username: string
-}
-
-interface Talk extends Event<'Talk'> {
-    text: string,
-    username: string
-}
-
-interface UpdatePen extends Event<'UpdatePen'> {
-    username: string,
-    pen: {
-        color: string
-    }
-}
-
-interface Position {
-    x: number,
-    y: number
-}
-
-interface Palette {
-    position: Position,
-    color: string
-}
-
-interface Draw extends Event<'Draw'> {
-    username: string,
-    position: Position
-}
-
 export default class App extends React.Component<{}, State> {
     ws: WebSocket
     isDraw: boolean
     lastPositions: { [key: string]: Palette; } = {}
 
     constructor() {
-        super({})
-        this.ws = new WebSocket('ws://localhost:9000/ws/' + roomId)
+        super({});
+        this.ws = new WebSocket('ws://localhost:9000/ws/' + roomId);
 
         this.ws.addEventListener('open', () => {
             console.log('connected!')
-        })
+        });
 
         this.ws.addEventListener('message', msg => {
-            const data = JSON.parse(msg.data) as Event<EventType>
-            console.log(data)
-
-            if (data.eventType == 'Join') {
-                const join = data as Join
-                console.log(`${join.username}: joined`)
-
-                this.lastPositions[join.username] = {
-                    position: { x: null, y: null },
-                    color: "#000000"
-                }
-                return
+            const data = JSON.parse(msg.data);
+            if (isMessage(data)) {
+                this.onMessage(data);
+                return;
             }
+        });
 
-            if (data.eventType == 'Leave') {
-                const leave = data as Leave
-                console.log(`${leave.username}: left`)
-                return
-            }
+        window.ws = this.ws;
 
-            if (data.eventType == 'Talk') {
-                const talk = data as Talk
-                console.log(`${talk.username}: ${talk.text}`)
-                return
-            }
+        this.isDraw = false;
+        this.lastPositions = {};
 
-            if (data.eventType == 'Draw') {
-                const draw = data as Draw
-
-                const context = (document.getElementById('mainCanvas') as HTMLCanvasElement).getContext('2d')
-
-                const palette = this.lastPositions[draw.username]
-                const lastPosition = palette.position
-
-                context.lineCap = 'round';
-                context.lineJoin = 'round';
-                context.lineWidth = 5;
-                context.strokeStyle = palette.color;
-
-                const { x, y } = draw.position
-
-                if (lastPosition.x === null || lastPosition.y === null) {
-                    context.moveTo(x, y);
-                } else {
-                    context.moveTo(lastPosition.x, lastPosition.y);
-                }
-                context.lineTo(x, y);
-                context.stroke();
-
-                this.lastPositions[draw.username].position = {x, y};
-
-                return
-            }
-        })
-
-        window.ws = this.ws
-
-        this.isDraw = false
-        this.lastPositions = {}
-
-        this.setState({text: ""})
+        this.setState({text: ""});
     }
 
     send(message: any) {
-        this.ws.send(JSON.stringify(message))
+        this.ws.send(JSON.stringify(message));
+    }
+
+    onMessage(message: Message) {
+        if (message.type === 'Join') {
+            console.log(`${message.data.username}: joined`)
+
+            this.lastPositions[message.data.username] = {
+                position: { x: null, y: null },
+                color: "#000000"
+            }
+            return;
+        }
+
+        if (message.type === 'Leave') {
+            console.log(`${message.data.username}: left`)
+            return
+        }
+
+        if (message.type === 'Chat') {
+            console.log(`${message.data.username}: ${message.data.text}`)
+            return
+        }
+
+        if (message.type === 'Draw') {
+
+            const context = (document.getElementById('mainCanvas') as HTMLCanvasElement).getContext('2d')
+
+            const palette = this.lastPositions[message.data.username]
+            const lastPosition = palette.position
+
+            context.lineCap = 'round';
+            context.lineJoin = 'round';
+            context.lineWidth = 5;
+            context.strokeStyle = palette.color;
+
+            const { x, y } = message.data.position
+
+            if (lastPosition.x === null || lastPosition.y === null) {
+                context.moveTo(x, y);
+            } else {
+                context.moveTo(lastPosition.x, lastPosition.y);
+            }
+            context.lineTo(x, y);
+            context.stroke();
+
+            this.lastPositions[message.data.username].position = {x, y};
+
+            return;
+        }
     }
 
     render() {
