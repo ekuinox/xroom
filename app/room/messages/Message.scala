@@ -23,6 +23,7 @@ object Message {
   implicit def object2json(event: Message[_, _]): JsValue = {
     event match {
       case event: JoinMessage => Json.toJson(event)
+      case event: LeaveMessage => Json.toJson(event)
       case event: ErrorMessage => Json.toJson(event)
     }
   }
