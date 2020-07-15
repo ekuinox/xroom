@@ -13,10 +13,11 @@ case class Message[T, Name <: String](`type`: Name, data :T)
 
 object Message {
   implicit def json2object(value: JsValue): Message[_, _] = {
-    (value \ "type").asOpt[String] match {
-      case Some(JoinMessage.format) => value.asOpt[JoinMessage].getOrElse(UnknownErrorMessage)
-      case _ => UnknownErrorMessage
-    }
+    (value \ "type").asOpt[String].flatMap {
+      case JoinMessage.format => value.asOpt[JoinMessage]
+      case LeaveMessage.format => value.asOpt[LeaveMessage]
+      case _ => Some(UnknownErrorMessage)
+    }.getOrElse(UnknownErrorMessage)
   }
 
   implicit def object2json(event: Message[_, _]): JsValue = {
