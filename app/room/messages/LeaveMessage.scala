@@ -5,7 +5,7 @@ import play.api.libs.json.{Json, OFormat}
 case class LeaveData(username: String)
 
 /**
- * 新しくルームに参加したユーザを周知させる
+ * ルームから退出したユーザを周知させる
  * Server => Client
  * @param data
  */
