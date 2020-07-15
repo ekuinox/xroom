@@ -17,6 +17,7 @@ object Message {
       case JoinMessage.format => value.asOpt[JoinMessage]
       case LeaveMessage.format => value.asOpt[LeaveMessage]
       case ChatMessage.format => value.asOpt[ChatMessage]
+      case DrawMessage.format => value.asOpt[DrawMessage]
       case _ => Some(UnknownErrorMessage)
     }.getOrElse(UnknownErrorMessage)
   }
@@ -26,6 +27,7 @@ object Message {
       case event: JoinMessage => Json.toJson(event)
       case event: LeaveMessage => Json.toJson(event)
       case event: ChatMessage => Json.toJson(event)
+      case event: DrawMessage => Json.toJson(event)
       case event: ErrorMessage => Json.toJson(event)
     }
   }
