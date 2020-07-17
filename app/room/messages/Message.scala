@@ -18,6 +18,7 @@ object Message {
       case LeaveMessage.format => value.asOpt[LeaveMessage]
       case ChatMessage.format => value.asOpt[ChatMessage]
       case DrawMessage.format => value.asOpt[DrawMessage]
+      case UpdatePenMessage.format => value.asOpt[UpdatePenMessage]
       case _ => Some(UnknownErrorMessage)
     }.getOrElse(UnknownErrorMessage)
   }
@@ -28,6 +29,7 @@ object Message {
       case event: LeaveMessage => Json.toJson(event)
       case event: ChatMessage => Json.toJson(event)
       case event: DrawMessage => Json.toJson(event)
+      case event: UpdatePenMessage => Json.toJson(event)
       case event: ErrorMessage => Json.toJson(event)
     }
   }
