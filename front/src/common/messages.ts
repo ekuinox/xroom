@@ -26,7 +26,7 @@ export type ChatMessage = CreateMessage<'Chat', {
   text: string;
 }>;
 
-export type UpdatePenColorMessage = CreateMessage<'UpdatePenColor', {
+export type UpdatePenMessage = CreateMessage<'UpdatePen', {
   username: string;
   pen: {
     color: string;
@@ -41,7 +41,7 @@ export type DrawMessage = CreateMessage<'Draw', {
 export type Message = 
   JoinMessage |
   LeaveMessage |
-  UpdatePenColorMessage |
+  UpdatePenMessage |
   DrawMessage |
   ChatMessage;
 
