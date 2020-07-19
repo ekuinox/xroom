@@ -19,8 +19,8 @@ object Message {
       case BroadcastChatMessage.format => value.asOpt[BroadcastChatMessage]
       case BroadcastDrawMessage.format => value.asOpt[BroadcastDrawMessage]
       case BroadcastUpdatePenMessage.format => value.asOpt[BroadcastUpdatePenMessage]
-      case _ => Some(BroadcastUnknownErrorMessage)
-    }.getOrElse(BroadcastUnknownErrorMessage)
+      case _ => Some(ResponseMessage.notOk)
+    }.getOrElse(ResponseMessage.notOk)
   }
 
   implicit def object2json(event: Message[_, _]): JsValue = {
