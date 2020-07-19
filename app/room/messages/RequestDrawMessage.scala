@@ -5,12 +5,16 @@ import room.canvas.Position
 
 case class RequestDrawData(position: Position)
 
+case object RequestDrawData {
+  implicit val format: OFormat[RequestDrawData] = Json.format[RequestDrawData]
+}
+
 /**
  * Client => Server
  * 描画情報を送信する
  * @param data メッセージ本体
  */
-case class RequestDrawMessage(override val data: RequestDrawData) extends Message[RequestDrawData, _](RequestChatMessage.Type, data)
+case class RequestDrawMessage(data: RequestDrawData) extends Message[RequestDrawData](RequestChatMessage.Type, data)
 
 object RequestDrawMessage {
   implicit val format: OFormat[RequestDrawMessage] = Json.format[RequestDrawMessage]

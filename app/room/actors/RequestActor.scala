@@ -5,7 +5,7 @@ import play.api.libs.json._
 import room.messages._
 import room._
 
-case class RequestData(message: Message[_, _], triggerUserIdentifier: String)
+case class RequestData(message: Message[_], triggerUserIdentifier: String)
 
 class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Actor {
   override def receive: Receive = {
@@ -28,7 +28,7 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
     RoomClient.removeParticipant(roomId, identifier)
   }
 
-  def handleMessage(event: Message[_, _]): Message[_, _] = {
+  def handleMessage(event: Message[_]): Message[_] = {
     event match {
       case chat: RequestChatMessage => BroadcastChatMessage(BroadcastChatData(username, chat.data.text))
       case draw: RequestDrawMessage => BroadcastDrawMessage(BroadcastDrawData(username, draw.data.position))

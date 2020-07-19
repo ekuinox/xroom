@@ -4,10 +4,14 @@ import play.api.libs.json.{Json, OFormat}
 
 case class RequestChatData(text: String)
 
+case object RequestChatData {
+  implicit val format: OFormat[RequestChatData] = Json.format[RequestChatData]
+}
+
 /**
  * Client => Server
  */
-case class RequestChatMessage(override val data: RequestChatData) extends Message[RequestChatData, _](RequestChatMessage.Type, data)
+case class RequestChatMessage(data: RequestChatData) extends Message[RequestChatData](RequestChatMessage.Type, data)
 
 object RequestChatMessage {
   implicit val format: OFormat[RequestChatMessage] = Json.format[RequestChatMessage]

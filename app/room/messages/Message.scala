@@ -1,6 +1,6 @@
 package room.messages
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, OFormat}
 
 /**
  * Server <=> Client のメッセージ型
@@ -9,21 +9,21 @@ import play.api.libs.json.{JsValue, Json}
  * @tparam T メッセージ本体の型
  * @tparam Name 識別するための型
  */
-case class Message[T, Name <: String](`type`: Name, data :T)
+class Message[T](`type`: String, data :T)
 
 object Message {
   /**
    * Todo: 暗黙型変換しているのも頂けないし、Parseに失敗した場合に無理やり適当なメッセージに収めようとしているのは違うと思う
    */
-  implicit def json2object(value: JsValue): Message[_, _] = {
+  implicit def json2object(value: JsValue): Message[_] = {
     (value \ "type").asOpt[String].flatMap {
-      case BroadcastJoinMessage.format => value.asOpt[BroadcastJoinMessage]
-      case BroadcastLeaveMessage.format => value.asOpt[BroadcastLeaveMessage]
-      case BroadcastChatMessage.format => value.asOpt[BroadcastChatMessage]
-      case BroadcastDrawMessage.format => value.asOpt[BroadcastDrawMessage]
-      case BroadcastUpdatePenMessage.format => value.asOpt[BroadcastUpdatePenMessage]
-      case RequestChatMessage.format => value.asOpt[RequestChatMessage]
-      case RequestDrawMessage.format => value.asOpt[RequestDrawMessage]
+      case BroadcastJoinMessage.Type => value.asOpt[BroadcastJoinMessage]
+      case BroadcastLeaveMessage.Type => value.asOpt[BroadcastLeaveMessage]
+      case BroadcastChatMessage.Type => value.asOpt[BroadcastChatMessage]
+      case BroadcastDrawMessage.Type => value.asOpt[BroadcastDrawMessage]
+      case BroadcastUpdatePenMessage.Type => value.asOpt[BroadcastUpdatePenMessage]
+      case RequestChatMessage.Type => value.asOpt[RequestChatMessage]
+      case RequestDrawMessage.Type => value.asOpt[RequestDrawMessage]
       case _ => Some(ResponseMessage.notOk)
     }.getOrElse(ResponseMessage.notOk)
   }
@@ -31,7 +31,7 @@ object Message {
   /**
    * Todo: toJsonを持つものをcaseで囲ってtoJsonしたいけどどうしたらいい
    */
-  implicit def object2json(event: Message[_, _]): JsValue = {
+  implicit def object2json(event: Message[_]): JsValue = {
     event match {
       case event: BroadcastJoinMessage => Json.toJson(event)
       case event: BroadcastLeaveMessage => Json.toJson(event)
@@ -46,9 +46,3 @@ object Message {
     }
   }
 }
-
-/**
- * Server => Client
- * なんでかわからないエラー
- */
-case object BroadcastUnknownErrorMessage extends BroadcastErrorMessage(BroadcastErrorData("BroadcastUnknownError"))
