@@ -2,16 +2,16 @@ package room.messages
 
 import play.api.libs.json.{Json, OFormat}
 
-case class LeaveData(username: String)
+case class BroadcastLeaveData(username: String)
 
 /**
  * ルームから退出したユーザを周知させる
  * Server => Client
  * @param data
  */
-case class LeaveMessage(override val data: LeaveData) extends Message[LeaveData, _]("Leave", data)
+case class BroadcastLeaveMessage(override val data: BroadcastLeaveData) extends Message[BroadcastLeaveData, _]("BroadcastLeave", data)
 
-object LeaveMessage {
-  implicit val format: OFormat[LeaveMessage] = Json.format[LeaveMessage]
-  val Type: String = "Leave"
+object BroadcastLeaveMessage {
+  implicit val format: OFormat[BroadcastLeaveMessage] = Json.format[BroadcastLeaveMessage]
+  val Type: String = "BroadcastLeave"
 }

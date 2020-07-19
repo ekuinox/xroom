@@ -2,16 +2,16 @@ package room.messages
 
 import play.api.libs.json.{Json, OFormat}
 
-case class ErrorData(message: String)
+case class BroadcastErrorData(message: String)
 
 /**
- * Server <=> Client
+ * Server => Broadcast
  * エラーを伝え合うメッセージ
  * @param data メッセージ本体
  */
-case class ErrorMessage(override val data: ErrorData) extends Message[ErrorData, _]("Error", data)
+case class BroadcastErrorMessage(override val data: BroadcastErrorData) extends Message[BroadcastErrorData, _]("BroadcastError", data)
 
-object ErrorMessage {
-  implicit val format: OFormat[ErrorMessage] = Json.format[ErrorMessage]
-  val Type: String = "Error"
+object BroadcastErrorMessage {
+  implicit val format: OFormat[BroadcastErrorMessage] = Json.format[BroadcastErrorMessage]
+  val Type: String = "BroadcastError"
 }

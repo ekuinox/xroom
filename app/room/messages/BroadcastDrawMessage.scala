@@ -3,16 +3,16 @@ package room.messages
 import play.api.libs.json.{Json, OFormat}
 import room.canvas.Position
 
-case class DrawData(username: String, position: Position)
+case class BroadcastDrawData(username: String, position: Position)
 
 /**
- * Server <=> Client
+ * Server => Broadcast
  * 描画情報を送信する
  * @param data メッセージ本体
  */
-case class DrawMessage(override val data: DrawData) extends Message[DrawData, _]("Draw", data)
+case class BroadcastDrawMessage(override val data: BroadcastDrawData) extends Message[BroadcastDrawData, _]("BroadcastDraw", data)
 
-object DrawMessage {
-  implicit val format: OFormat[DrawMessage] = Json.format[DrawMessage]
-  val Type: String = "Draw"
+object BroadcastDrawMessage {
+  implicit val format: OFormat[BroadcastDrawMessage] = Json.format[BroadcastDrawMessage]
+  val Type: String = "BroadcastDraw"
 }

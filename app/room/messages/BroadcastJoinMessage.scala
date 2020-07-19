@@ -2,16 +2,16 @@ package room.messages
 
 import play.api.libs.json.{Json, OFormat}
 
-case class JoinData(username: String)
+case class BroadcastJoinData(username: String)
 
 /**
  * 新しくルームに参加したユーザを周知させる
  * Server => Client
  * @param data
  */
-case class JoinMessage(override val data: JoinData) extends Message[JoinData, _]("Join", data)
+case class BroadcastJoinMessage(override val data: BroadcastJoinData) extends Message[BroadcastJoinData, _]("BroadcastJoin", data)
 
-object JoinMessage {
-  implicit val format: OFormat[JoinMessage] = Json.format[JoinMessage]
-  val Type: String = "Join"
+object BroadcastJoinMessage {
+  implicit val format: OFormat[BroadcastJoinMessage] = Json.format[BroadcastJoinMessage]
+  val Type: String = "BroadcastJoin"
 }
