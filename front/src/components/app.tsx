@@ -102,7 +102,7 @@ export default class App extends React.Component<{}, State> {
                 Hello World
                 <textarea rows={1} cols={30} onChange={event => this.setState({text: event.target.value})}/>
                 <button onClick={() => {
-                    this.send({eventType: 'RequestChat', data: { text: this.state.text }})
+                    this.send({type: 'RequestChat', data: { text: this.state.text }})
                 }}>はい</button>
 
                 <canvas
@@ -114,7 +114,7 @@ export default class App extends React.Component<{}, State> {
                         if (!this.isDraw) return
 
                         this.send({
-                            eventType: 'Draw',
+                            type: 'RequestDraw',
                             position: {
                                 x: event.clientX,
                                 y: event.clientY
