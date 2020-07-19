@@ -5,7 +5,7 @@ import play.api.libs.json.{Json, OFormat}
 case class BroadcastChatData(username: String, text: String)
 
 /**
- * Server <=> Broadcast
+ * Server => Broadcast
  * @param data メッセージ本体
  */
 case class BroadcastChatMessage(override val data: BroadcastChatData) extends Message[BroadcastChatData, _]("BroadcastChat", data)
