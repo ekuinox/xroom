@@ -48,7 +48,7 @@ export default class App extends React.Component<{}, State> {
     }
 
     onMessage(message: Message) {
-        if (message.type === 'Join') {
+        if (message.type === 'BroadcastJoin') {
             console.log(`${message.data.username}: joined`)
 
             this.lastPositions[message.data.username] = {
@@ -58,17 +58,17 @@ export default class App extends React.Component<{}, State> {
             return;
         }
 
-        if (message.type === 'Leave') {
+        if (message.type === 'BroadcastLeave') {
             console.log(`${message.data.username}: left`)
             return
         }
 
-        if (message.type === 'Chat') {
+        if (message.type === 'BroadcastChat') {
             console.log(`${message.data.username}: ${message.data.text}`)
             return
         }
 
-        if (message.type === 'Draw') {
+        if (message.type === 'BroadcastDraw') {
 
             const context = (document.getElementById('mainCanvas') as HTMLCanvasElement).getContext('2d')
 
@@ -102,7 +102,7 @@ export default class App extends React.Component<{}, State> {
                 Hello World
                 <textarea rows={1} cols={30} onChange={event => this.setState({text: event.target.value})}/>
                 <button onClick={() => {
-                    this.send({eventType: "Talk", text: this.state.text})
+                    this.send({eventType: 'RequestChat', data: { text: this.state.text }})
                 }}>はい</button>
 
                 <canvas
