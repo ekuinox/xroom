@@ -23,6 +23,7 @@ object Message {
       case BroadcastDrawMessage.format => value.asOpt[BroadcastDrawMessage]
       case BroadcastUpdatePenMessage.format => value.asOpt[BroadcastUpdatePenMessage]
       case RequestChatMessage.format => value.asOpt[RequestChatMessage]
+      case RequestDrawMessage.format => value.asOpt[RequestDrawMessage]
       case _ => Some(ResponseMessage.notOk)
     }.getOrElse(ResponseMessage.notOk)
   }
@@ -37,6 +38,10 @@ object Message {
       case event: BroadcastChatMessage => Json.toJson(event)
       case event: BroadcastDrawMessage => Json.toJson(event)
       case event: BroadcastUpdatePenMessage => Json.toJson(event)
+      case event: BroadcastErrorMessage => Json.toJson(event)
+      case event: RequestChatMessage => Json.toJson(event)
+      case event: RequestDrawMessage => Json.toJson(event)
+      case event: ResponseMessage => Json.toJson(event)
       case event: BroadcastErrorMessage => Json.toJson(event)
     }
   }
