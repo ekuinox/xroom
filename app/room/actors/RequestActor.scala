@@ -1,22 +1,11 @@
 package room.actors
 
 import akka.actor._
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import room.messages._
 import room._
-import room.events._
-import room.events.client.{
-  Event => ClientEvent,
-  Talk => ClientTalk,
-  UpdateUsername => ClientUpdateUsername,
-  UpdatePen => ClientUpdatePen,
-  Draw => ClientDraw
-}
-import room.events.server._
-import room._
-import room.Participant._
 
-case class RequestData(event: Event, triggerUserIdentifier: String)
+case class RequestData(message: Message[_, _], triggerUserIdentifier: String)
 
 class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Actor {
   override def receive: Receive = {
@@ -25,29 +14,25 @@ class RequestActor(out: ActorRef, identifier: String, roomId: String) extends Ac
       out ! response
     }
     case _ => {
-      out ! RequestData(BadRequestError, identifier)
+      out ! RequestData(ResponseMessage.notOk, identifier)
     }
   }
 
   override def preStart(): Unit = {
     RoomClient.addParticipant(roomId, identifier, Participant(makeUsername))
-    out ! RequestData(Join(username), identifier)
+    out ! RequestData(BroadcastJoinMessage(BroadcastJoinData(username)), identifier)
   }
 
   override def postStop(): Unit = {
-    out ! RequestData(Leave(username), identifier)
+    out ! RequestData(BroadcastLeaveMessage(BroadcastLeaveData(username)), identifier)
     RoomClient.removeParticipant(roomId, identifier)
   }
 
-  def handleMessage(event: ClientEvent): Event = {
+  def handleMessage(event: Message[_, _]): Message[_, _] = {
     event match {
-      case talk: ClientTalk => Talk(username = RoomClient.getParticipant(roomId, identifier).get.username, text = talk.text)
-      case updateUsername: ClientUpdateUsername =>
-        RoomClient.addParticipant(roomId, identifier, RoomClient.getParticipant(roomId, identifier).get.copy(username = updateUsername.username))
-        UpdateUsername(oldUsername = username, newUsername = updateUsername.username)
-      case draw: ClientDraw => Draw(username, draw.position)
-      case updatePen: ClientUpdatePen => UpdatePen(username, updatePen.pen)
-      case _ => BadRequestError
+      case chat: RequestChatMessage => BroadcastChatMessage(BroadcastChatData(username, chat.data.text))
+      case draw: RequestDrawMessage => BroadcastDrawMessage(BroadcastDrawData(username, draw.data.position))
+      case _ => ResponseMessage.notOk
     }
   }
 
